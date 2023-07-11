@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo List</title>
+    <style>
+        #todo-list {
+            margin-bottom: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .task-item .task-title {
+            flex-grow: 1;
+        }
+
+        .task-item .delete-button,
+        .task-item .complete-button,
+        .task-item .incomplete-button {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <input id="task-input" type="text" placeholder="Add a task">
+    <button id="add-button">Add</button>
+
+    <div id="todo-list"></div>
+
+    <button id="show-completed-button">Show Completed</button>
+    <button id="show-incomplete-button">Show Incomplete</button>
+
+    <script>
+        // Get references to HTML elements
+        const taskInput = document.getElementById('task-input');
+        const addButton = document.getElementById('add-button');
+        const todoList = document.getElementById('todo-list');
+        const showCompletedButton = document.getElementById('show-completed-button');
+        const showIncompleteButton = document.getElementById('show-incomplete-button');
+
+        // Store tasks in an array
+        let tasks = [];
+
+        // Function to render the todo list
+        function renderTodoList() {
+            // Clear the existing list
+            todoList.innerHTML = '';
+
+            // Create and append the task items
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                if (task.completed) {
+                    taskItem.classList.add('completed');
+                }
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', () => toggleTaskCompleted(index));
+                taskItem.appendChild(checkbox);
+
+                const taskTitle = document.createElement('span');
+                taskTitle.className = 'task-title';
+                taskTitle.innerText = task.title;
+                taskItem.appendChild(taskTitle);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-button';
+                deleteButton.innerText = 'Delete';
+                deleteButton.addEventListener('click', () => deleteTask(index));
+                taskItem.appendChild(deleteButton);
+
+                todoList.appendChild(taskItem);
+            });
+        }
+
+        // Function to add a new task
+        function addTask() {
+            const title = taskInput.value.trim();
+
+            if (title !== '') {
+                tasks.push({ title, completed: false });
+                taskInput.value = '';
+                renderTodoList();
+            }
+        }
+
+        // Function to toggle task completion
+        function toggleTaskCompleted(index) {
+            tasks[index].completed = !tasks[index].completed;
+            renderTodoList();
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTodoList();
+        }
+
+        // Function to show completed tasks
+        function showCompletedTasks() {
+            const completedTasks = tasks.filter(task => task.completed);
+            alert(completedTasks.map(task => task.title).join('\n'));
+        }
+
+        // Function to show incomplete tasks
+        function showIncompleteTasks() {
+            const incompleteTasks = tasks.filter(task => !task.completed);
+            alert(incompleteTasks.map(task => task.title).join('\n'));
+        }
+
+        // Event listener for add button
+        addButton.addEventListener('click', addTask);
+
+        // Event listener for Enter key press on input field
+        taskInput.addEventListener('keyup', (event) => {
+            if (event.keyCode === 13) {
+                addTask();
+            }
+        });
+
+        // Event listener for show completed button
+        showCompletedButton.addEventListener('click', showCompletedTasks);
+
+        // Event listener for show incomplete button
+        showIncompleteButton.addEventListener('click', showIncompleteTasks);
+
+        // Render the initial todo list
+        renderTodoList();
+    </script>
+</body>
+</html>
